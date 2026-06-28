@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environments
+.env
+.env.local
+.env.*.local
+venv/
+ENV/
+env/
+
+# Libraries and local binaries
+node_modules/
+yolov8n.pt
+de421.bsp
+test_image.jpg
+
+# Log files
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
