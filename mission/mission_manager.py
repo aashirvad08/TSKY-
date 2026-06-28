@@ -51,6 +51,8 @@ class MissionManager:
     def _pause(self, workload: Workload, reason: str) -> str:
         workload.status = "paused"
         self._call_hook("pause_workload", workload_name=workload.name)
+        if hasattr(self.engine, "cooldowns"):
+            self.engine.cooldowns[workload.name] = 10  # 10 ticks cooldown to prevent chattering
         return f"Paused '{workload.name}' (priority {workload.priority}) — {reason}"
 
     def _enforce_gpu_capacity(self, satellite_state: dict) -> List[str]:

@@ -6,8 +6,8 @@ from .workloads import Workload
 
 class RecoveryEngine:
     def __init__(self, hooks: dict = None):
-        # hooks are Person 1's functions, injected at startup
         self.hooks = hooks or {}
+        self.cooldowns = {}
 
     def _call_hook(self, name: str, **kwargs):
         """Safely call a Person 1 hook if it exists."""
@@ -62,22 +62,30 @@ class RecoveryEngine:
         battery = satellite_state.get("battery", 100)
         healthy_gpus = satellite_state.get("healthy_gpus", 8)
         temperature = satellite_state.get("temperature", 40)
+        max_temp = satellite_state.get("max_node_temp", temperature)
         blackout = satellite_state.get("blackout", False)
 
         if battery < 20 and workload.priority < 5:
             return True
         if healthy_gpus <= 3 and workload.priority < 7:
             return True
-        if temperature > 85 and workload.priority < 8:
+        if max_temp > 85 and workload.priority < 8:
             return True
         if blackout and workload.priority < 7:
             return True
         return False
 
     def should_resume_workload(self, workload: Workload, satellite_state: dict) -> bool:
+        # Decrement and check cooldown
+        name = workload.name
+        if name in self.cooldowns and self.cooldowns[name] > 0:
+            self.cooldowns[name] -= 1
+            return False
+
         battery = satellite_state.get("battery", 100)
         healthy_gpus = satellite_state.get("healthy_gpus", 8)
         temperature = satellite_state.get("temperature", 40)
+        max_temp = satellite_state.get("max_node_temp", temperature)
         blackout = satellite_state.get("blackout", False)
 
-        return battery > 35 and healthy_gpus >= 5 and temperature < 75 and not blackout
+        return battery > 35 and healthy_gpus >= 5 and max_temp < 75 and not blackout
