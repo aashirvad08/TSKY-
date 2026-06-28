@@ -8,7 +8,7 @@ app_port: 7860
 pinned: false
 ---
 
-# FarAway — Tsukuyomi-1 Mission Control Backend
+# Tsukuyomi-1 Mission Control Backend
 
 Unified FastAPI backend for the orbital GPU datacenter simulation.  
 All six physics models run in a single process; a background thread
